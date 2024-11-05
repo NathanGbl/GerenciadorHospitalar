@@ -1,8 +1,8 @@
 typedef struct Registro{
     char *nome;
-	int valor;
+	int idade;
 	char *rg;
-	Data* pai;
+	Data* entrada;
 } Registro;
 
 typedef struct Data {
@@ -18,8 +18,7 @@ typedef struct Lista{
 
 typedef struct ELista {
     Registro *dados;
-    struct Elista *proximo;
-    int ano;
+    struct ELista *proximo;
 } ELista;
 
 typedef struct Fila{
@@ -44,34 +43,50 @@ typedef struct EABB {
     EABB *filhoDir;
 } EABB;
 
-// Menus
-void menu() {}
+// LDE
 
-void menuCadastrar() {}
+Lista *inicializaLista() {};
 
-void menuAtendimento() {}
+ELista *inicializaELista(Registro *dados) {};
 
-void menuPesquisa() {}
+void inserirLDE(Lista *lista, Registro *dados) {};
 
-void menuDesfazer() {}
+void removerLDE(Lista *lista, Registro *dados) {};
 
-void menuSobre() {}
+void mostrarLDE(Lista *lista) {};
+
+
 
 // Cadastrar
-int cadastrarNovoPaciente(Lista *lista, ELista *elista) {}
+Registro *criaRegistro(char *nome, int idade, char *rg) {};
 
-int ConsultarPacienteCadastrado(Lista *lista, Registro paciente) {}
+int cadastrarNovoPaciente(Lista *lista, ELista *elista, char *nome, int idade, char *rg) {};
 
-void mostrarListaCompleta(Lista lista) {}
+void ConsultarPacienteCadastrado(Lista *lista, char *rg) {};
 
-int atualizarDadosPaciente(Lista lista, Registro paciente, Registro novosDados) {}
+void mostrarListaCompleta(Lista *lista) {};
 
-int removerPaciente(Lista lista, Registro paciente) {}
+int atualizarDadosPaciente(Lista *lista, Registro *paciente, Registro *novosDados) {};
+
+int removerPaciente(Lista *lista, Registro *paciente) {};
 
 // Atendimento
 
-void enfileirarPaciente(Fila fila, Registro paciente) {}
+void enfileirarPaciente(Fila *fila, Registro *paciente) {};
 
-void desenfileirarPaciente(Fila fila) {}
+void desenfileirarPaciente(Fila *fila) {};
 
-void mostrarFila(Fila fila) {}
+void mostrarFila(Fila *fila) {};
+
+// Menus
+void menu() {};
+
+void menuCadastrar() {};
+
+void menuAtendimento() {};
+
+void menuPesquisa() {};
+
+void menuDesfazer() {};
+
+void menuSobre() {};
