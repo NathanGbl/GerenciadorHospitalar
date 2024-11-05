@@ -41,6 +41,7 @@ typedef struct EABB {
     Registro *dados;
     EABB *filhoEsq;
     EABB *filhoDir;
+    EABB *pai;
 } EABB;
 
 // LDE
