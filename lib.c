@@ -140,25 +140,54 @@ void mostrarLDE(Lista *lista) {
     return;
 }
 
-Fila *inicializaFila() {
-    Fila *fila = malloc(sizeof(Fila));
-    fila->head = NULL;
-    fila->tail = NULL;
-    fila->qtde = 0;
-
-    return fila;
+EFila *criaCelula(Registro *paciente){
+	EFila *celula = malloc(sizeof(EFila));
+	celula->proximo = NULL;
+	celula->anterior = NULL;
+	celula->dados = paciente;
+	return celula;
 }
 
-EFila *inicializaEFila(Registro *dados) {
-    EFila *efila = malloc(sizeof(EFila));
-
-    efila->proximo = NULL;
-    efila->dados = dados;
-
-    return efila;
+Fila *criaFila(){
+	Fila *queue = malloc(sizeof(Fila));
+	queue->head = NULL;
+	queue->tail = NULL;
+	queue->qtde = 0;
+	return queue;
 }
 
-EABB *cria_vertice(Registro *dados){
+void enqueue(Fila *queue, Registro *paciente){
+	EFila *novo = criaCelula(paciente);
+    if (queue->qtde == 0) {
+        queue->head = novo;
+    } else {
+        queue->tail->proximo = novo;
+        novo->anterior = queue->tail;
+    }
+    queue->tail = novo;
+    queue->qtde++;
+    return;
+}
+
+void dequeue(Fila *queue){
+	if (queue->qtde == 0) {
+        return -1;
+    }
+
+    Registro *dados = queue->head->dados;
+    EFila *temp = queue->head;
+    queue->head = queue->head->proximo;
+
+    if (queue->qtde == 1) {
+        queue->tail = NULL;
+    } else {
+        queue->head->anterior = NULL;
+    }
+    queue->qtde--;
+    free(temp);
+}
+
+EABB *criaVertice(Registro *dados){
 	EABB* novo = malloc(sizeof(EABB));
 	novo->filhoDir = NULL;
 	novo->filhoEsq = NULL;
@@ -197,169 +226,126 @@ int fatorBalanceamento(EABB *x) {
     return altura(x->filhoDir) - altura(x->filhoEsq);
 }
 
-void RotacaoDireita(ABB *arvore, EABB *x) {
+/* 
+    Modo = 1 => constroi pelo ano
+    Modo = 2 => constroi pelo mes
+    Modo = 3 => constroi pelo dia
+    Modo = 4 => constroi pelo idade
+ */
+
+void RotacaoDireita(ABB *arvore, EABB *x, int modo) {
     x->filhoEsq->pai = x->pai;
     if (x->pai != NULL) {
-        if (x->valor > x->pai->valor) {
-            x->pai->dir = x->esq;
+        if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
+            x->pai->filhoDir = x->filhoEsq;
+        } else if (modo == 2 && x->dados->entrada->mes > x->pai->dados->entrada->mes) {
+            x->pai->filhoDir = x->filhoEsq;
+        } else if (modo == 3 && x->dados->entrada->dia > x->pai->dados->entrada->dia) {
+            x->pai->filhoDir = x->filhoEsq;
+        } else if (modo == 4 && x->dados->idade > x->pai->dados->idade) {
+            x->pai->filhoDir = x->filhoEsq;
         } else {
-            x->pai->esq = x->esq;
+            x->pai->filhoEsq = x->filhoEsq;
         }
     } else {
-        arvore->raiz = x->esq;
+        arvore->raiz = x->filhoEsq;
     }
-    x->pai = x->esq;
-    x->esq = x->esq->dir;
-    x->pai->dir = x;
-    if (x->esq != NULL) {
-        x->esq->pai = x;
+    x->pai = x->filhoEsq;
+    x->filhoEsq = x->filhoEsq->filhoDir;
+    x->pai->filhoDir = x;
+    if (x->filhoEsq != NULL) {
+        x->filhoEsq->pai = x;
     }
-    printf("Direita em %d\n", x->valor);
 }
 
-void RotacaoEsquerda(Arvore *arvore, Vertice *x) {
-    x->dir->pai = x->pai;
+void RotacaoEsquerda(ABB *arvore, EABB *x, int modo) {
+    x->filhoDir->pai = x->pai;
     if (x->pai != NULL) {
-        if (x->valor > x->pai->valor) {
-            x->pai->dir = x->dir;
+        if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
+            x->pai->filhoDir = x->filhoDir;
+        } else if (modo == 2 && x->dados->entrada->mes > x->pai->dados->entrada->mes) {
+            x->pai->filhoDir = x->filhoDir;
+        } else if (modo == 3 && x->dados->entrada->dia > x->pai->dados->entrada->dia) {
+            x->pai->filhoDir = x->filhoDir;
+        } else if (modo == 4 && x->dados->idade > x->pai->dados->idade) {
+            x->pai->filhoDir = x->filhoDir;
         } else {
-            x->pai->esq = x->dir;
+            x->pai->filhoEsq = x->filhoDir;
         }
     } else {
-        arvore->raiz = x->dir;
+        arvore->raiz = x->filhoDir;
     }
-    x->pai = x->dir;
-    x->dir = x->dir->esq;
-    x->pai->esq = x;
-    if (x->dir != NULL) {
-        x->dir->pai = x;
-    }
-    printf("Esquerda em %d\n", x->valor);
-}
-
-void balanceie (Arvore *arvore, Vertice *r) {
-    if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->dir) >= 0) {
-        RotacaoEsquerda(arvore, r);
-    } else if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->dir) < 0) {
-        RotacaoDireita(arvore, r->dir);
-        RotacaoEsquerda(arvore, r);
-    } else if (fatorBalanceamento(r) <= -2 && fatorBalanceamento(r->esq) <= 0) {
-        RotacaoDireita(arvore, r);
-    } else if (fatorBalanceamento(r) <= -2 && fatorBalanceamento(r->esq) > 0) {
-        RotacaoEsquerda(arvore, r->esq);
-        RotacaoDireita(arvore, r);
+    x->pai = x->filhoDir;
+    x->filhoDir = x->filhoDir->filhoEsq;
+    x->pai->filhoEsq = x;
+    if (x->filhoDir != NULL) {
+        x->filhoDir->pai = x;
     }
 }
 
-int insere(Arvore *arvore, int valor) {
-  Vertice *novo = malloc(sizeof(Vertice));
-  novo->dir = NULL;
-  novo->esq = NULL;
-  novo->pai = NULL;
-  novo->valor = valor;
+void balanceie (ABB *arvore, EABB *r, int modo) {
+    if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->filhoDir) >= 0) {
+        RotacaoEsquerda(arvore, r, modo);
+    } else if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->filhoDir) < 0) {
+        RotacaoDireita(arvore, r->filhoDir, modo);
+        RotacaoEsquerda(arvore, r , modo);
+    } else if (fatorBalanceamento(r) <= -2 && fatorBalanceamento(r->filhoEsq) <= 0) {
+        RotacaoDireita(arvore, r, modo);
+    } else if (fatorBalanceamento(r) <= -2 && fatorBalanceamento(r->filhoEsq) > 0) {
+        RotacaoEsquerda(arvore, r->filhoEsq, modo);
+        RotacaoDireita(arvore, r, modo);
+    }
+}
 
-  Vertice *anterior = NULL;
-  Vertice *atual = arvore->raiz;
+int inserirArvore(ABB *arvore, Registro *paciente, int modo) {
+  EABB *novoPaciente = criaVertice(paciente);
+
+  EABB *anterior = NULL;
+  EABB *atual = arvore->raiz;
 
   while (atual != NULL) {
     anterior = atual;
-    if (valor <= atual->valor) {
-      atual = atual->esq;
+    if (modo == 1 && novoPaciente->dados->entrada->ano > atual->dados->entrada->ano) {
+        atual = atual->filhoDir;
+    } else if (modo == 2 && novoPaciente->dados->entrada->mes > atual->dados->entrada->mes) {
+        atual = atual->filhoDir;
+    } else if (modo == 3 && novoPaciente->dados->entrada->dia > atual->dados->entrada->dia) {
+        atual = atual->filhoDir;
+    } else if (modo == 4 && novoPaciente->dados->idade > atual->dados->idade) {
+        atual = atual->filhoDir;
     } else {
-      atual = atual->dir;
+        atual = atual->filhoEsq;
     }
   }
 
-  novo->pai = anterior;
+  novoPaciente->pai = anterior;
   if (anterior != NULL) {
-    if (valor <= anterior->valor) {
-      anterior->esq = novo;
+    if (novoPaciente->dados->entrada->ano < anterior->dados->entrada->ano ||
+        novoPaciente->dados->entrada->mes < atual->dados->entrada->mes ||
+        novoPaciente->dados->entrada->dia < atual->dados->entrada->dia ||
+        novoPaciente->dados->idade > atual->dados->idade) {
+      anterior->filhoEsq = novoPaciente;
     } else {
-      anterior->dir = novo;
+      anterior->filhoDir = novoPaciente;
     }
   } else {
-    arvore->raiz = novo;
+    arvore->raiz = novoPaciente;
   }
   arvore->qtde++;
 
-  Vertice *temp = novo->pai;
+  EABB *temp = novoPaciente->pai;
   while (temp != NULL) {
-    balanceie(arvore, temp);
+    balanceie(arvore, temp, modo);
     temp = temp->pai;
   }
   return 1;
 }
 
-int remover(Arvore *arvore, Vertice *x) {
-    int filhos = 0;
-
-    if (x != NULL && x->esq != NULL) {
-        filhos++;
-    }
-    if (x != NULL && x->dir != NULL) {
-        filhos++;
-    }
-
-    Vertice *pai = x->pai;
-    if (filhos == 0) {
-        if (pai != NULL) {
-        if (pai->esq == x) {
-            pai->esq = NULL;
-        } else {
-            pai->dir = NULL;
-        }
-        } else {
-        arvore->raiz = NULL;
-        }
-        arvore->qtde--;
-    } else if (filhos == 1) {
-        Vertice *filho = x->esq;
-        if (filho == NULL)
-        filho = x->dir;
-
-        if (pai == NULL)
-        arvore->raiz = filho;
-        else {
-        if (pai->esq == x)
-            pai->esq = filho;
-        else
-            pai->dir = filho;
-        }
-        filho->pai = pai;
-        arvore->qtde--;
-    } else {
-        Vertice *sucessor = x;
-        sucessor = sucessor->dir;
-        while (sucessor->esq != NULL)
-        sucessor = sucessor->esq;
-        x->valor = sucessor->valor;
-        return remover(arvore, sucessor);
-    }
-
-    return 1;
-}
-
-int buscar_e_remover(ABB *arvore, int valor) {
-    Vertice *atual = arvore->raiz;
-    while (atual != NULL) {
-        if (valor < atual->valor) {
-            atual = atual->esq;
-        } else if (valor > atual->valor) {
-            atual = atual->dir;
-        } else {
-            return remover(arvore, atual);
-        }
-    }
-    return 0;
-}
-
-int getValor(Arvore *arvore) { return arvore->qtde; }
-
-void imprimeInOrdem(Vertice *raiz) {
+void imprimeInOrdem(EABB *raiz) {
   if (raiz != NULL) {
-    imprimeInOrdem(raiz->esq);
-    printf("%d ", raiz->valor);
-    imprimeInOrdem(raiz->dir);
+    imprimeInOrdem(raiz->filhoEsq);
+    mostrarDadosPaciente(raiz->dados);
+    imprimeInOrdem(raiz->filhoDir);
   }
 }
 
@@ -462,4 +448,46 @@ void mostrarFila(Fila *fila) {
 }
 
 // Pesquisa
+
+void mostrarPorAno(Lista *lista) {
+    ABB *arvore = criaArvore();
+    ELista *atual = lista->inicio;
+    for (int i = 0; i < lista->qtde; i++) {
+        inserirArvore(arvore, atual->dados, 1);
+    }
+    imprimeInOrdem(arvore->raiz);
+    liberarArvore(arvore->raiz);
+}
+
+void mostrarPorMes(Lista *lista) {
+    ABB *arvore = criaArvore();
+    ELista *atual = lista->inicio;
+    for (int i = 0; i < lista->qtde; i++) {
+        inserirArvore(arvore, atual->dados, 2);
+    }
+    imprimeInOrdem(arvore->raiz);
+    liberarArvore(arvore->raiz);
+}
+
+void mostrarPorDia(Lista *lista) {
+    ABB *arvore = criaArvore();
+    ELista *atual = lista->inicio;
+    for (int i = 0; i < lista->qtde; i++) {
+        inserirArvore(arvore, atual->dados, 3);
+    }
+    imprimeInOrdem(arvore->raiz);
+    liberarArvore(arvore->raiz);
+}
+
+void mostrarPorIdade(Lista *lista) {
+    ABB *arvore = criaArvore();
+    ELista *atual = lista->inicio;
+    for (int i = 0; i < lista->qtde; i++) {
+        inserirArvore(arvore, atual->dados, 4);
+    }
+    imprimeInOrdem(arvore->raiz);
+    liberarArvore(arvore->raiz);
+}
+
+// Desfazer
 

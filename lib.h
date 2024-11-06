@@ -29,6 +29,7 @@ typedef struct Fila{
 
 typedef struct EFila {
     Registro *dados;
+    struct EFila *anterior;
     struct EFila *proximo;
 } EFila;
 
@@ -43,6 +44,17 @@ typedef struct EABB {
     EABB *filhoDir;
     EABB *pai;
 } EABB;
+
+typedef struct Operacao {
+    int acao;
+    Registro *dados;
+    struct Operacao *proximo;
+} Operacao;
+
+typedef struct Stack {
+    Operacao *topo;
+    int qtde;
+} Stack;
 
 // LDE
 
