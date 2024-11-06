@@ -141,11 +141,11 @@ void mostrarLDE(Lista *lista) {
 }
 
 EFila *criaCelula(Registro *paciente){
-	EFila *celula = malloc(sizeof(EFila));
-	celula->proximo = NULL;
-	celula->anterior = NULL;
-	celula->dados = paciente;
-	return celula;
+	EFila *efila = malloc(sizeof(EFila));
+	efila->proximo = NULL;
+	efila->anterior = NULL;
+	efila->dados = paciente;
+	return efila;
 }
 
 Fila *criaFila(){
@@ -171,10 +171,9 @@ void enqueue(Fila *queue, Registro *paciente){
 
 void dequeue(Fila *queue){
 	if (queue->qtde == 0) {
-        return -1;
+        return;
     }
 
-    Registro *dados = queue->head->dados;
     EFila *temp = queue->head;
     queue->head = queue->head->proximo;
 
@@ -490,4 +489,25 @@ void mostrarPorIdade(Lista *lista) {
 }
 
 // Desfazer
-
+// acao == 1 => enqueue
+// acao == 2 => dequeue
+int desfazer(Stack *pilha, Fila *queue) {
+    if (pilha->topo != NULL) {
+        if (pilha->topo->acao == 1) {
+            EFila *temp = queue->tail;
+            queue->tail->anterior->proximo = NULL;
+            queue->tail = queue->tail->anterior;
+            free(temp);
+        } else if (pilha->topo->acao == 2) {
+            EFila *novo = criaCelula(pilha->topo->dados);
+            novo->proximo = queue->head;
+            queue->head->anterior = novo;
+            queue->head = novo;
+        } else {
+            return 0;
+        }
+        return 1;
+    } else {
+        return 0;
+    }
+}
