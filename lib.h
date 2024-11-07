@@ -56,24 +56,69 @@ typedef struct Stack {
     int qtde;
 } Stack;
 
-// LDE
+// Geral
 
-Lista *inicializaLista() {};
+ELista *buscarPeloRg(Lista *lista, char *rg) {}
 
-ELista *inicializaELista(Registro *dados) {};
+void mostrarPaciente(Registro *paciente) {}
 
-void inserirLDE(Lista *lista, Registro *dados) {};
+void mostrarDadosPaciente(Registro *paciente) {}
 
-void removerLDE(Lista *lista, Registro *dados) {};
+void menu(int *opcao) {}
 
-void mostrarLDE(Lista *lista) {};
+void menuCadastrar(int *opcao) {}
 
+void menuAtendimento(int *opcao) {}
 
+void menuPesquisa(int *opcao) {}
+
+// Estrutura de Dados
+
+Lista *inicializaLista() {}
+
+ELista *inicializaELista(Registro *dados) {}
+
+void inserirLDE(Lista *lista, Registro *dados) {}
+
+void removerLDE(Lista *lista, Registro *dados) {}
+
+void mostrarLDE(Lista *lista) {}
+
+EFila *criaCelula(Registro *paciente){}
+
+Fila *criaFila(){}
+
+void enqueue(Fila *queue, Registro *paciente){}
+
+void dequeue(Fila *queue){}
+
+EABB *criaVertice(Registro *dados){}
+
+ABB *criaArvore(){}
+
+void liberarArvore(EABB* vertice) {}
+
+int max(int x, int y) {}
+
+int altura (EABB *x) {}
+
+int fatorBalanceamento(EABB *x) {}
+
+void RotacaoDireita(ABB *arvore, EABB *x, int modo) {}
+
+void RotacaoEsquerda(ABB *arvore, EABB *x, int modo) {}
+
+void balanceie (ABB *arvore, EABB *r, int modo) {}
+
+int inserirArvore(ABB *arvore, Registro *paciente, int modo) {}
+
+void imprimeInOrdem(EABB *raiz) {}
 
 // Cadastrar
+
 Registro *criaRegistro(char *nome, int idade, char *rg) {};
 
-int cadastrarNovoPaciente(Lista *lista, ELista *elista, char *nome, int idade, char *rg) {};
+int cadastrarNovoPaciente(Lista *lista, ELista *elista, char *nome, int idade, char *rg) {}
 
 void ConsultarPacienteCadastrado(Lista *lista, char *rg) {};
 
@@ -81,25 +126,32 @@ void mostrarListaCompleta(Lista *lista) {};
 
 int atualizarDadosPaciente(Lista *lista, Registro *paciente, Registro *novosDados) {};
 
-int removerPaciente(Lista *lista, Registro *paciente) {};
+int removerPaciente(Lista *lista, Registro *paciente) { removerLDE(lista, paciente); };
 
 // Atendimento
 
-void enfileirarPaciente(Fila *fila, Registro *paciente) {};
+void enfileirarPaciente(Fila *fila, Registro *dados) {}
 
-void desenfileirarPaciente(Fila *fila) {};
+EFila *desenfileirarPaciente (Fila *fila) {}
 
-void mostrarFila(Fila *fila) {};
+void mostrarFila(Fila *fila) {}
 
-// Menus
-void menu() {};
+// Pesquisa
 
-void menuCadastrar() {};
+void mostrarPorAno(Lista *lista) {}
 
-void menuAtendimento() {};
+void mostrarPorMes(Lista *lista) {}
 
-void menuPesquisa() {};
+void mostrarPorDia(Lista *lista) {}
 
-void menuDesfazer() {};
+void mostrarPorIdade(Lista *lista) {}
 
-void menuSobre() {};
+int desfazer(Stack *pilha, Fila *queue) {}
+
+// Carregar/Salvar
+
+void leArquivo(Lista *lista) {}
+
+void escreveArquivo(Lista *lista) {}
+
+void limpaBuffer() {}

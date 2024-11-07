@@ -36,48 +36,59 @@ void mostrarDadosPaciente(Registro *paciente) {
 
 }
 
-void menu() {
+void menu(int *opcao) {
 
+    printf("Atendimento médico à sua disposição, o que gostaria?\n");
     printf("1. Cadastrar\n");
     printf("2. Atendimento\n");
     printf("3. Pesquisa\n");
     printf("4. Desfazer\n");
     printf("5. Carregar/Salvar\n");
     printf("6. Sobre\n");
+    printf("Opção: ");
+    scanf("%d", opcao);
 
 }
 
-void menuCadastrar() {
+void menuCadastrar(int *opcao) {
 
     printf("\t1. Cadastrar novo paciente\n");
     printf("\t2. Consultar paciente cadastrado\n");
     printf("\t3. Mostrar lista completa\n");
     printf("\t4. Atualizar dados de paciente\n");
     printf("\t5. Remover paciente\n");
+    printf("\tOpção: ");
+    scanf("%d", opcao);
 
 }
 
-void menuAtendimento() {
+void menuAtendimento(int *opcao) {
 
     printf("\t1. Enfileirar paciente\n");
     printf("\t2. Desenfileirar cadastrado\n");
     printf("\t3. Mostrar fila\n");
+    printf("\tOpção: ");
+    scanf("%d", opcao);
 
 }
 
-void menuPesquisa() {
+void menuPesquisa(int *opcao) {
 
     printf("\tMostrar registros ordenados por:\n");
     printf("\t\t1. Por ano\n");
     printf("\t\t2. Por mes\n");
     printf("\t\t3. Por dia\n");
     printf("\t\t4. Por idade\n");
+    printf("Opção: ");
+    scanf("%d", opcao);
 
 }
 
-void menuDesfazer() {
+void menuDesfazer(char confirm) {
 
-    printf("Deseja reverter a ultima operacao feita no atendimento? (s/n)\n");
+    printf("Deseja reverter a ultima operacao feita no atendimento?(s/n)\n");
+    printf("Opção: ");
+    scanf("%c", confirm);
 
 }
 
@@ -425,8 +436,13 @@ Registro *criaRegistro(char *nome, int idade, char *rg) {
 
 };
 
-int cadastrarNovoPaciente(Lista *lista, ELista *elista, char *nome, int idade, char *rg) {
-
+int cadastrarNovoPaciente(Lista *lista, ELista *elista) {
+    char *nome;
+    int idade;
+    char *rg;
+    scanf("%[^\n]", nome);
+    scanf("%d", idade);
+    scanf("%s", rg);
     Registro *novoPaciente = criaRegistro(nome, idade, rg);
     inserirLDE(lista, novoPaciente);
     return 1;
@@ -591,7 +607,7 @@ int desfazer(Stack *pilha, Fila *queue) {
 
 // Carregar/Salvar
 
-void le_arquivo(Lista *lista) {
+void leArquivo(Lista *lista) {
 
     FILE *f = fopen("registros", "rb");
     if (f == NULL) {
@@ -600,26 +616,34 @@ void le_arquivo(Lista *lista) {
     fread(lista->qtde, sizeof(int), 1, f);
     
     for (int i = 0; i < lista->qtde; i++) {
-        ELista *novo;
-        fread(novo, sizeof(ELista) -sizeof(ELista*), 1, f);
+        ELista *novo = malloc(sizeof(ELista));
+        fread(novo, sizeof(ELista) - sizeof(ELista*), 1, f);
+
+        inserirLDE(lista, novo->dados);
     }
+    fclose(f);
     return;
 
 }
 
-void escreve_arquivo(Lista *lista) {
+void escreveArquivo(Lista *lista) {
 
-    FILE *f = fopen("tarefas", "wb");
+    FILE *f = fopen("registros", "wb");
 
     if (f == NULL) {
         return;
     }
-    fwrite(lista, sizeof(Lista), 1, f);
+    ELista *atual = lista->inicio;
+    while(atual!= NULL) {
+        fwrite(atual, sizeof(ELista) - sizeof(ELista*), 1, f);
+        atual = atual->proximo;  
+    }
+    fclose(f);
     fclose(f);
   
 }
 
-void clean_buffer() {
+void limpaBuffer() {
 
     int i;
     while ((i = getchar() != '\n' && i != EOF));
