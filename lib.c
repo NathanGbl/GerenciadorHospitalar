@@ -6,14 +6,17 @@
 // Geral
 
 ELista *buscarPeloRg(Lista *lista, char *rg) {
+
     ELista *atual = lista->inicio;
     while (atual != NULL && atual->dados->rg != rg) {
         atual = atual->proximo;
     }
     return atual;
+
 }
 
 void mostrarPaciente(Registro *paciente) {
+
     printf("\tNome: %s\n", paciente->nome);
     printf("\tIdade: %d\n", paciente->idade);
     printf("\tRG: %s\n", paciente->rg);
@@ -22,50 +25,64 @@ void mostrarPaciente(Registro *paciente) {
         paciente->entrada->mes, 
         paciente->entrada->ano
     );
+
 }
 
 void mostrarDadosPaciente(Registro *paciente) {
+
     printf("===== Paciente =====\n");
     mostrarPaciente(paciente);
     return;
+
 }
 
 void menu() {
+
     printf("1. Cadastrar\n");
     printf("2. Atendimento\n");
     printf("3. Pesquisa\n");
     printf("4. Desfazer\n");
     printf("5. Carregar/Salvar\n");
     printf("6. Sobre\n");
+
 }
 
 void menuCadastrar() {
+
     printf("\t1. Cadastrar novo paciente\n");
     printf("\t2. Consultar paciente cadastrado\n");
     printf("\t3. Mostrar lista completa\n");
     printf("\t4. Atualizar dados de paciente\n");
     printf("\t5. Remover paciente\n");
+
 }
 
 void menuAtendimento() {
+
     printf("\t1. Enfileirar paciente\n");
     printf("\t2. Desenfileirar cadastrado\n");
     printf("\t3. Mostrar fila\n");
+
 }
 
 void menuPesquisa() {
+
     printf("\tMostrar registros ordenados por:\n");
     printf("\t\t1. Por ano\n");
     printf("\t\t2. Por mes\n");
     printf("\t\t3. Por dia\n");
     printf("\t\t4. Por idade\n");
+
 }
 
 void menuDesfazer() {
+
     printf("Deseja reverter a ultima operacao feita no atendimento? (s/n)\n");
+
 }
 
 void menuSobre() {
+
     printf("\tAutores:\n");
     printf("\t\tNome: Nathan Gabriel da Fonseca Leite\n");
     printf("\t\tCiclo: \n");
@@ -78,32 +95,40 @@ void menuSobre() {
     printf("\t\tCurso: Ciencia da Computacao\n");
     printf("\t\tDisciplina: Estrutura de Dados\n");
     printf("\t\tData: \n");
+
 }
 
 // Estrutura de Dados
 
 Lista *inicializaLista() {
+
     Lista *lista = malloc(sizeof(Lista));
     lista->inicio = NULL;
     lista->qtde = 0;
     return lista;
+
 }
 
 ELista *inicializaELista(Registro *dados) {
+
     ELista *elista = malloc(sizeof(ELista));
     elista->proximo = NULL;
     elista->dados = dados;
-  return elista;
+    return elista;
+
 }
 
 void inserirLDE(Lista *lista, Registro *dados) {
+
     ELista *nova = inicializaELista(dados);
     nova->proximo = lista->inicio;
     lista->inicio = nova;
     lista->qtde++;
+
 }
 
 void removerLDE(Lista *lista, Registro *dados) {
+
     ELista *atual = lista->inicio;
     ELista *anterior = NULL;
     if (lista->qtde == 0) {
@@ -126,8 +151,10 @@ void removerLDE(Lista *lista, Registro *dados) {
     }
     free(atual);
     lista->qtde--;
+
 }
 void mostrarLDE(Lista *lista) {
+
     ELista *atual = lista->inicio;
     int qtde = 0;
     while (atual != NULL) {
@@ -138,25 +165,31 @@ void mostrarLDE(Lista *lista) {
     }
     printf("\n");
     return;
+
 }
 
 EFila *criaCelula(Registro *paciente){
+
 	EFila *efila = malloc(sizeof(EFila));
 	efila->proximo = NULL;
 	efila->anterior = NULL;
 	efila->dados = paciente;
 	return efila;
+
 }
 
 Fila *criaFila(){
+
 	Fila *queue = malloc(sizeof(Fila));
 	queue->head = NULL;
 	queue->tail = NULL;
 	queue->qtde = 0;
 	return queue;
+
 }
 
 void enqueue(Fila *queue, Registro *paciente){
+
 	EFila *novo = criaCelula(paciente);
     if (queue->qtde == 0) {
         queue->head = novo;
@@ -167,9 +200,11 @@ void enqueue(Fila *queue, Registro *paciente){
     queue->tail = novo;
     queue->qtde++;
     return;
+
 }
 
 void dequeue(Fila *queue){
+
 	if (queue->qtde == 0) {
         return;
     }
@@ -184,30 +219,37 @@ void dequeue(Fila *queue){
     }
     queue->qtde--;
     free(temp);
+
 }
 
 EABB *criaVertice(Registro *dados){
+
 	EABB* novo = malloc(sizeof(EABB));
 	novo->filhoDir = NULL;
 	novo->filhoEsq = NULL;
 	novo->pai = NULL;
 	novo->dados = dados;
 	return novo;
+
 }
 
 ABB *criaArvore(){
+
 	ABB* arvore = malloc(sizeof(ABB));
 	arvore->raiz = NULL;
 	arvore->qtde = 0;
 	return arvore;
+
 }
 
 void liberarArvore(EABB* vertice) {
+
     if (vertice != NULL) {
         liberar_arvore(vertice->filhoEsq);
         liberar_arvore(vertice->filhoDir);
         free(vertice);
     }
+
 }
 
 int max(int x, int y) {
@@ -215,10 +257,12 @@ int max(int x, int y) {
 }
 
 int altura (EABB *x) {
+
     if (x == NULL) {
         return -1;
     }
     return max(altura(x->filhoEsq), altura(x->filhoDir)) + 1;
+
 }
 
 int fatorBalanceamento(EABB *x) {
@@ -233,6 +277,7 @@ int fatorBalanceamento(EABB *x) {
  */
 
 void RotacaoDireita(ABB *arvore, EABB *x, int modo) {
+
     x->filhoEsq->pai = x->pai;
     if (x->pai != NULL) {
         if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
@@ -255,9 +300,11 @@ void RotacaoDireita(ABB *arvore, EABB *x, int modo) {
     if (x->filhoEsq != NULL) {
         x->filhoEsq->pai = x;
     }
+
 }
 
 void RotacaoEsquerda(ABB *arvore, EABB *x, int modo) {
+
     x->filhoDir->pai = x->pai;
     if (x->pai != NULL) {
         if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
@@ -280,9 +327,11 @@ void RotacaoEsquerda(ABB *arvore, EABB *x, int modo) {
     if (x->filhoDir != NULL) {
         x->filhoDir->pai = x;
     }
+
 }
 
 void balanceie (ABB *arvore, EABB *r, int modo) {
+
     if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->filhoDir) >= 0) {
         RotacaoEsquerda(arvore, r, modo);
     } else if (fatorBalanceamento(r) >= 2 && fatorBalanceamento(r->filhoDir) < 0) {
@@ -294,9 +343,11 @@ void balanceie (ABB *arvore, EABB *r, int modo) {
         RotacaoEsquerda(arvore, r->filhoEsq, modo);
         RotacaoDireita(arvore, r, modo);
     }
+
 }
 
 int inserirArvore(ABB *arvore, Registro *paciente, int modo) {
+
   EABB *novoPaciente = criaVertice(paciente);
 
   EABB *anterior = NULL;
@@ -338,19 +389,23 @@ int inserirArvore(ABB *arvore, Registro *paciente, int modo) {
     temp = temp->pai;
   }
   return 1;
+  
 }
 
 void imprimeInOrdem(EABB *raiz) {
+
   if (raiz != NULL) {
     imprimeInOrdem(raiz->filhoEsq);
     mostrarDadosPaciente(raiz->dados);
     imprimeInOrdem(raiz->filhoDir);
   }
+
 }
 
 // Cadastrar
 
 Registro *criaRegistro(char *nome, int idade, char *rg) {
+
     Registro *novoPaciente = malloc(sizeof(Registro));
     srand(time(NULL));
     int dia = (rand() % 30) + 1;
@@ -367,26 +422,32 @@ Registro *criaRegistro(char *nome, int idade, char *rg) {
     novoPaciente->entrada->dia = dia;
     novoPaciente->entrada->mes = mes;
     novoPaciente->entrada->ano = ano;
+
 };
 
 int cadastrarNovoPaciente(Lista *lista, ELista *elista, char *nome, int idade, char *rg) {
+
     Registro *novoPaciente = criaRegistro(nome, idade, rg);
     inserirLDE(lista, novoPaciente);
     return 1;
+
 }
 
 void ConsultarPacienteCadastrado(Lista *lista, char *rg) {
+
     ELista *paciente = buscarPeloRg(lista, rg);
     if (paciente == NULL) {
         printf("\t\tPaciente não encontrado\n");
         return;
     }
     mostrarDadosPaciente(paciente);
+
 };
 
 void mostrarListaCompleta(Lista *lista) { mostrarLDE(lista); };
 
 int atualizarDadosPaciente(Lista *lista, Registro *paciente, Registro *novosDados) {
+
     ELista *atual = buscarPeloRg(lista, paciente->rg);
     if (atual != NULL) {
         if (novosDados->nome != "") {
@@ -409,6 +470,7 @@ int removerPaciente(Lista *lista, Registro *paciente) { removerLDE(lista, pacien
 // Atendimento
 
 void enfileirarPaciente(Fila *fila, Registro *dados) {
+
     EFila *novo = inicializaEFila(dados);
     if (fila->qtde == 0) {
         fila->head = novo;
@@ -418,9 +480,11 @@ void enfileirarPaciente(Fila *fila, Registro *dados) {
     fila->tail = novo;
     fila->qtde++;
     return;
+
 }
 
 EFila *desenfileirarPaciente (Fila *fila) {
+
     if (fila->qtde == 0) {
         return -1;
     }
@@ -435,20 +499,24 @@ EFila *desenfileirarPaciente (Fila *fila) {
     fila->qtde--;
     free(temp);
     return paciente;
+
 }
 
 void mostrarFila(Fila *fila) {
+
     EFila *atual = fila->head;
     while(atual != NULL) {
         mostrarPaciente(atual->dados);
         atual = atual->proximo;
     }
     printf("\n");
+
 }
 
 // Pesquisa
 
 void mostrarPorAno(Lista *lista) {
+
     ABB *arvore = criaArvore();
     ELista *atual = lista->inicio;
     for (int i = 0; i < lista->qtde; i++) {
@@ -456,9 +524,11 @@ void mostrarPorAno(Lista *lista) {
     }
     imprimeInOrdem(arvore->raiz);
     liberarArvore(arvore->raiz);
+
 }
 
 void mostrarPorMes(Lista *lista) {
+
     ABB *arvore = criaArvore();
     ELista *atual = lista->inicio;
     for (int i = 0; i < lista->qtde; i++) {
@@ -466,9 +536,11 @@ void mostrarPorMes(Lista *lista) {
     }
     imprimeInOrdem(arvore->raiz);
     liberarArvore(arvore->raiz);
+
 }
 
 void mostrarPorDia(Lista *lista) {
+
     ABB *arvore = criaArvore();
     ELista *atual = lista->inicio;
     for (int i = 0; i < lista->qtde; i++) {
@@ -476,9 +548,11 @@ void mostrarPorDia(Lista *lista) {
     }
     imprimeInOrdem(arvore->raiz);
     liberarArvore(arvore->raiz);
+
 }
 
 void mostrarPorIdade(Lista *lista) {
+
     ABB *arvore = criaArvore();
     ELista *atual = lista->inicio;
     for (int i = 0; i < lista->qtde; i++) {
@@ -486,12 +560,14 @@ void mostrarPorIdade(Lista *lista) {
     }
     imprimeInOrdem(arvore->raiz);
     liberarArvore(arvore->raiz);
+
 }
 
 // Desfazer
 // acao == 1 => enqueue
 // acao == 2 => dequeue
 int desfazer(Stack *pilha, Fila *queue) {
+
     if (pilha->topo != NULL) {
         if (pilha->topo->acao == 1) {
             EFila *temp = queue->tail;
@@ -510,4 +586,42 @@ int desfazer(Stack *pilha, Fila *queue) {
     } else {
         return 0;
     }
+
+}
+
+// Carregar/Salvar
+
+void le_arquivo(Lista *lista) {
+
+    FILE *f = fopen("registros", "rb");
+    if (f == NULL) {
+        return;
+    }
+    fread(lista->qtde, sizeof(int), 1, f);
+    
+    for (int i = 0; i < lista->qtde; i++) {
+        ELista *novo;
+        fread(novo, sizeof(ELista) -sizeof(ELista*), 1, f);
+    }
+    return;
+
+}
+
+void escreve_arquivo(Lista *lista) {
+
+    FILE *f = fopen("tarefas", "wb");
+
+    if (f == NULL) {
+        return;
+    }
+    fwrite(lista, sizeof(Lista), 1, f);
+    fclose(f);
+  
+}
+
+void clean_buffer() {
+
+    int i;
+    while ((i = getchar() != '\n' && i != EOF));
+
 }
