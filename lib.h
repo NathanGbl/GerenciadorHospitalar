@@ -7,9 +7,9 @@ typedef struct Data {
 } Data;
 
 typedef struct Registro{
-    char *nome;
-  int idade;
-  char *rg;
+    char nome[51];
+    int idade;
+    char rg[12];
   Data* entrada;
 } Registro;
 
@@ -60,7 +60,7 @@ typedef struct Stack {
 
 // Geral
 
-ELista *buscarPeloRg(Lista *lista, char *rg);
+ELista *buscarPeloRg(Lista *lista, char rg[12]);
 
 void mostrarPaciente(Registro *paciente);
 
@@ -86,7 +86,7 @@ ELista *inicializaELista(Registro *dados);
 
 void inserirLDE(Lista *lista, Registro *dados);
 
-int removerLDE(Lista *lista, Registro *dados);
+int removerLDE(Lista *lista, char rg[12]);
 
 void mostrarLDE(Lista *lista);
 
@@ -96,7 +96,7 @@ Fila *criaFila();
 
 void enqueue(Fila *queue, Registro *paciente);
 
-void dequeue(Fila *queue);
+EFila *dequeue(Fila *queue);
 
 EABB *criaVertice(Registro *dados);
 
@@ -110,6 +110,21 @@ int altura (EABB *x);
 
 int fatorBalanceamento(EABB *x);
 
+Operacao *criarOperacao(int acao, Registro *dados);
+
+Stack *criarPilha();
+
+void push(Stack *pilha, Operacao *op);
+
+Operacao *pop(Stack *pilha);
+
+/* 
+    Modo = 1 => constroi pelo ano
+    Modo = 2 => constroi pelo mes
+    Modo = 3 => constroi pelo dia
+    Modo = 4 => constroi pelo idade
+ */
+
 void RotacaoDireita(ABB *arvore, EABB *x, int modo);
 
 void RotacaoEsquerda(ABB *arvore, EABB *x, int modo);
@@ -122,23 +137,23 @@ void imprimeInOrdem(EABB *raiz);
 
 // Cadastrar
 
-Registro *criaRegistro(char *nome, int idade, char *rg);
+Registro *criaRegistro();
 
-int cadastrarNovoPaciente(Lista *lista, ELista *elista);
+int cadastrarNovoPaciente(Lista *lista);
 
-void ConsultarPacienteCadastrado(Lista *lista, char *rg);
+void consultarPacienteCadastrado(Lista *lista);
 
 void mostrarListaCompleta(Lista *lista);
 
-int atualizarDadosPaciente(Lista *lista, Registro *paciente, Registro *novosDados);
+void atualizarDadosPaciente(Lista *lista, Registro *novosDados);
 
-int removerPaciente(Lista *lista, Registro *paciente);
+int removerPaciente(Lista *lista);
 
 // Atendimento
 
-void enfileirarPaciente(Fila *fila, Registro *dados);
+void enfileirarPaciente(Fila *fila, Lista *lista, Stack *pilha);
 
-EFila *desenfileirarPaciente (Fila *fila);
+void desenfileirarPaciente (Fila *fila, Stack *pilha);
 
 void mostrarFila(Fila *fila);
 
@@ -152,7 +167,10 @@ void mostrarPorDia(Lista *lista);
 
 void mostrarPorIdade(Lista *lista);
 
-int desfazer(Stack *pilha, Fila *queue);
+// Desfazer
+// acao == 1 => enqueue
+// acao == 2 => dequeue
+void desfazer(Stack *pilha, Fila *queue);
 
 // Carregar/Salvar
 
