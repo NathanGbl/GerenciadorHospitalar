@@ -1,7 +1,8 @@
-#include <lib.h>
+#include "lib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 // Geral
 
@@ -86,9 +87,9 @@ void menuPesquisa(int *opcao) {
 
 void menuDesfazer(char confirm) {
 
-    printf("Deseja reverter a ultima operacao feita no atendimento?(s/n)\n");
+    printf("\tDeseja reverter a ultima operacao feita no atendimento?(s/n)\n");
     printf("Opção: ");
-    scanf("%c", confirm);
+    scanf("%c", &confirm);
 
 }
 
@@ -138,19 +139,19 @@ void inserirLDE(Lista *lista, Registro *dados) {
 
 }
 
-void removerLDE(Lista *lista, Registro *dados) {
+int removerLDE(Lista *lista, Registro *dados) {
 
     ELista *atual = lista->inicio;
     ELista *anterior = NULL;
     if (lista->qtde == 0) {
-        return;
+        return 0;
     } else {
         while (atual != NULL && atual->dados->rg != dados->rg) {
             anterior = atual;
             atual = atual->proximo;
         }
         if (atual == NULL) {
-            return;
+            return 0;
         }
         if (anterior == NULL) {
             lista->inicio = atual->proximo;
@@ -162,6 +163,7 @@ void removerLDE(Lista *lista, Registro *dados) {
     }
     free(atual);
     lista->qtde--;
+    return 1;
 
 }
 void mostrarLDE(Lista *lista) {
@@ -181,27 +183,27 @@ void mostrarLDE(Lista *lista) {
 
 EFila *criaCelula(Registro *paciente){
 
-	EFila *efila = malloc(sizeof(EFila));
-	efila->proximo = NULL;
-	efila->anterior = NULL;
-	efila->dados = paciente;
-	return efila;
+  EFila *efila = malloc(sizeof(EFila));
+  efila->proximo = NULL;
+  efila->anterior = NULL;
+  efila->dados = paciente;
+  return efila;
 
 }
 
 Fila *criaFila(){
 
-	Fila *queue = malloc(sizeof(Fila));
-	queue->head = NULL;
-	queue->tail = NULL;
-	queue->qtde = 0;
-	return queue;
+  Fila *queue = malloc(sizeof(Fila));
+  queue->head = NULL;
+  queue->tail = NULL;
+  queue->qtde = 0;
+  return queue;
 
 }
 
 void enqueue(Fila *queue, Registro *paciente){
 
-	EFila *novo = criaCelula(paciente);
+  EFila *novo = criaCelula(paciente);
     if (queue->qtde == 0) {
         queue->head = novo;
     } else {
@@ -216,7 +218,7 @@ void enqueue(Fila *queue, Registro *paciente){
 
 void dequeue(Fila *queue){
 
-	if (queue->qtde == 0) {
+  if (queue->qtde == 0) {
         return;
     }
 
@@ -235,29 +237,29 @@ void dequeue(Fila *queue){
 
 EABB *criaVertice(Registro *dados){
 
-	EABB* novo = malloc(sizeof(EABB));
-	novo->filhoDir = NULL;
-	novo->filhoEsq = NULL;
-	novo->pai = NULL;
-	novo->dados = dados;
-	return novo;
+  EABB* novo = malloc(sizeof(EABB));
+  novo->filhoDir = NULL;
+  novo->filhoEsq = NULL;
+  novo->pai = NULL;
+  novo->dados = dados;
+  return novo;
 
 }
 
 ABB *criaArvore(){
 
-	ABB* arvore = malloc(sizeof(ABB));
-	arvore->raiz = NULL;
-	arvore->qtde = 0;
-	return arvore;
+  ABB* arvore = malloc(sizeof(ABB));
+  arvore->raiz = NULL;
+  arvore->qtde = 0;
+  return arvore;
 
 }
 
 void liberarArvore(EABB* vertice) {
 
     if (vertice != NULL) {
-        liberar_arvore(vertice->filhoEsq);
-        liberar_arvore(vertice->filhoDir);
+        liberarArvore(vertice->filhoEsq);
+        liberarArvore(vertice->filhoDir);
         free(vertice);
     }
 
@@ -400,7 +402,7 @@ int inserirArvore(ABB *arvore, Registro *paciente, int modo) {
     temp = temp->pai;
   }
   return 1;
-  
+
 }
 
 void imprimeInOrdem(EABB *raiz) {
@@ -433,6 +435,7 @@ Registro *criaRegistro(char *nome, int idade, char *rg) {
     novoPaciente->entrada->dia = dia;
     novoPaciente->entrada->mes = mes;
     novoPaciente->entrada->ano = ano;
+    return novoPaciente;
 
 };
 
@@ -440,9 +443,13 @@ int cadastrarNovoPaciente(Lista *lista, ELista *elista) {
     char *nome;
     int idade;
     char *rg;
+    printf("Digite o nome do paciente: ");
     scanf("%[^\n]", nome);
-    scanf("%d", idade);
+    
+    limpaBuffer();
+    scanf("%d", &idade);
     scanf("%s", rg);
+    limpaBuffer();
     Registro *novoPaciente = criaRegistro(nome, idade, rg);
     inserirLDE(lista, novoPaciente);
     return 1;
@@ -456,7 +463,7 @@ void ConsultarPacienteCadastrado(Lista *lista, char *rg) {
         printf("\t\tPaciente não encontrado\n");
         return;
     }
-    mostrarDadosPaciente(paciente);
+    mostrarDadosPaciente(paciente->dados);
 
 };
 
@@ -466,182 +473,181 @@ int atualizarDadosPaciente(Lista *lista, Registro *paciente, Registro *novosDado
 
     ELista *atual = buscarPeloRg(lista, paciente->rg);
     if (atual != NULL) {
-        if (novosDados->nome != "") {
-            atual->dados->nome = novosDados->nome;
-        }
-        if (novosDados->idade != 0) {
-            atual->dados->idade = novosDados->idade;
-        }
-        if (novosDados->rg != "") {
-            atual->dados->rg = novosDados->rg;
-        }
+        atual->dados->nome = novosDados->nome;
+        atual->dados->idade = novosDados->idade;
+        atual->dados->rg = novosDados->rg;
         return 1;
     }
     return 0;
 
 };
 
-int removerPaciente(Lista *lista, Registro *paciente) { removerLDE(lista, paciente); };
+int removerPaciente(Lista *lista, Registro *paciente) { 
+    
+    return removerLDE(lista, paciente); 
+    
+};
 
 // Atendimento
 
-void enfileirarPaciente(Fila *fila, Registro *dados) {
+// void enfileirarPaciente(Fila *fila, Registro *dados) {
 
-    EFila *novo = inicializaEFila(dados);
-    if (fila->qtde == 0) {
-        fila->head = novo;
-    } else {
-        fila->tail->proximo = novo;
-    }
-    fila->tail = novo;
-    fila->qtde++;
-    return;
+//     EFila *novo = criaCelula(dados);
+//     if (fila->qtde == 0) {
+//         fila->head = novo;
+//     } else {
+//         fila->tail->proximo = novo;
+//     }
+//     fila->tail = novo;
+//     fila->qtde++;
+//     return;
 
-}
+// }
 
-EFila *desenfileirarPaciente (Fila *fila) {
+// EFila *desenfileirarPaciente (Fila *fila) {
 
-    if (fila->qtde == 0) {
-        return -1;
-    }
+//     if (fila->qtde == 0) {
+//         return NULL;
+//     }
 
-    Registro *paciente = fila->head->dados;
-    EFila *temp = fila->head;
-    fila->head = fila->head->proximo;
+//     EFila *paciente = fila->head;
+//     EFila *temp = fila->head;
+//     fila->head = fila->head->proximo;
 
-    if (fila->qtde == 1) {
-        fila->tail = NULL;
-    }
-    fila->qtde--;
-    free(temp);
-    return paciente;
+//     if (fila->qtde == 1) {
+//         fila->tail = NULL;
+//     }
+//     fila->qtde--;
+//     free(temp);
+//     return paciente;
 
-}
+// }
 
-void mostrarFila(Fila *fila) {
+// void mostrarFila(Fila *fila) {
 
-    EFila *atual = fila->head;
-    while(atual != NULL) {
-        mostrarPaciente(atual->dados);
-        atual = atual->proximo;
-    }
-    printf("\n");
+//     EFila *atual = fila->head;
+//     while(atual != NULL) {
+//         mostrarPaciente(atual->dados);
+//         atual = atual->proximo;
+//     }
+//     printf("\n");
 
-}
+// }
 
-// Pesquisa
+// // Pesquisa
 
-void mostrarPorAno(Lista *lista) {
+// void mostrarPorAno(Lista *lista) {
 
-    ABB *arvore = criaArvore();
-    ELista *atual = lista->inicio;
-    for (int i = 0; i < lista->qtde; i++) {
-        inserirArvore(arvore, atual->dados, 1);
-    }
-    imprimeInOrdem(arvore->raiz);
-    liberarArvore(arvore->raiz);
+//     ABB *arvore = criaArvore();
+//     ELista *atual = lista->inicio;
+//     for (int i = 0; i < lista->qtde; i++) {
+//         inserirArvore(arvore, atual->dados, 1);
+//     }
+//     imprimeInOrdem(arvore->raiz);
+//     liberarArvore(arvore->raiz);
 
-}
+// }
 
-void mostrarPorMes(Lista *lista) {
+// void mostrarPorMes(Lista *lista) {
 
-    ABB *arvore = criaArvore();
-    ELista *atual = lista->inicio;
-    for (int i = 0; i < lista->qtde; i++) {
-        inserirArvore(arvore, atual->dados, 2);
-    }
-    imprimeInOrdem(arvore->raiz);
-    liberarArvore(arvore->raiz);
+//     ABB *arvore = criaArvore();
+//     ELista *atual = lista->inicio;
+//     for (int i = 0; i < lista->qtde; i++) {
+//         inserirArvore(arvore, atual->dados, 2);
+//     }
+//     imprimeInOrdem(arvore->raiz);
+//     liberarArvore(arvore->raiz);
 
-}
+// }
 
-void mostrarPorDia(Lista *lista) {
+// void mostrarPorDia(Lista *lista) {
 
-    ABB *arvore = criaArvore();
-    ELista *atual = lista->inicio;
-    for (int i = 0; i < lista->qtde; i++) {
-        inserirArvore(arvore, atual->dados, 3);
-    }
-    imprimeInOrdem(arvore->raiz);
-    liberarArvore(arvore->raiz);
+//     ABB *arvore = criaArvore();
+//     ELista *atual = lista->inicio;
+//     for (int i = 0; i < lista->qtde; i++) {
+//         inserirArvore(arvore, atual->dados, 3);
+//     }
+//     imprimeInOrdem(arvore->raiz);
+//     liberarArvore(arvore->raiz);
 
-}
+// }
 
-void mostrarPorIdade(Lista *lista) {
+// void mostrarPorIdade(Lista *lista) {
 
-    ABB *arvore = criaArvore();
-    ELista *atual = lista->inicio;
-    for (int i = 0; i < lista->qtde; i++) {
-        inserirArvore(arvore, atual->dados, 4);
-    }
-    imprimeInOrdem(arvore->raiz);
-    liberarArvore(arvore->raiz);
+//     ABB *arvore = criaArvore();
+//     ELista *atual = lista->inicio;
+//     for (int i = 0; i < lista->qtde; i++) {
+//         inserirArvore(arvore, atual->dados, 4);
+//     }
+//     imprimeInOrdem(arvore->raiz);
+//     liberarArvore(arvore->raiz);
 
-}
+// }
 
-// Desfazer
-// acao == 1 => enqueue
-// acao == 2 => dequeue
-int desfazer(Stack *pilha, Fila *queue) {
+// // Desfazer
+// // acao == 1 => enqueue
+// // acao == 2 => dequeue
+// int desfazer(Stack *pilha, Fila *queue) {
 
-    if (pilha->topo != NULL) {
-        if (pilha->topo->acao == 1) {
-            EFila *temp = queue->tail;
-            queue->tail->anterior->proximo = NULL;
-            queue->tail = queue->tail->anterior;
-            free(temp);
-        } else if (pilha->topo->acao == 2) {
-            EFila *novo = criaCelula(pilha->topo->dados);
-            novo->proximo = queue->head;
-            queue->head->anterior = novo;
-            queue->head = novo;
-        } else {
-            return 0;
-        }
-        return 1;
-    } else {
-        return 0;
-    }
+//     if (pilha->topo != NULL) {
+//         if (pilha->topo->acao == 1) {
+//             EFila *temp = queue->tail;
+//             queue->tail->anterior->proximo = NULL;
+//             queue->tail = queue->tail->anterior;
+//             free(temp);
+//         } else if (pilha->topo->acao == 2) {
+//             EFila *novo = criaCelula(pilha->topo->dados);
+//             novo->proximo = queue->head;
+//             queue->head->anterior = novo;
+//             queue->head = novo;
+//         } else {
+//             return 0;
+//         }
+//         return 1;
+//     } else {
+//         return 0;
+//     }
 
-}
+// }
 
-// Carregar/Salvar
+// // Carregar/Salvar
 
-void leArquivo(Lista *lista) {
+// void leArquivo(Lista *lista) {
 
-    FILE *f = fopen("registros", "rb");
-    if (f == NULL) {
-        return;
-    }
-    fread(lista->qtde, sizeof(int), 1, f);
-    
-    for (int i = 0; i < lista->qtde; i++) {
-        ELista *novo = malloc(sizeof(ELista));
-        fread(novo, sizeof(ELista) - sizeof(ELista*), 1, f);
+//     FILE *f = fopen("registros", "rb");
+//     if (f == NULL) {
+//         return;
+//     }
+//     fread(lista, sizeof(int), 1, f);
 
-        inserirLDE(lista, novo->dados);
-    }
-    fclose(f);
-    return;
+//     for (int i = 0; i < lista->qtde; i++) {
+//         ELista *novo = malloc(sizeof(ELista));
+//         fread(novo, sizeof(ELista) - sizeof(ELista*), 1, f);
 
-}
+//         inserirLDE(lista, novo->dados);
+//     }
+//     fclose(f);
+//     return;
 
-void escreveArquivo(Lista *lista) {
+// }
 
-    FILE *f = fopen("registros", "wb");
+// void escreveArquivo(Lista *lista) {
 
-    if (f == NULL) {
-        return;
-    }
-    ELista *atual = lista->inicio;
-    while(atual!= NULL) {
-        fwrite(atual, sizeof(ELista) - sizeof(ELista*), 1, f);
-        atual = atual->proximo;  
-    }
-    fclose(f);
-    fclose(f);
-  
-}
+//     FILE *f = fopen("registros", "wb");
+
+//     if (f == NULL) {
+//         return;
+//     }
+//     ELista *atual = lista->inicio;
+//     while(atual!= NULL) {
+//         fwrite(atual, sizeof(ELista) - sizeof(ELista*), 1, f);
+//         atual = atual->proximo;  
+//     }
+//     fclose(f);
+//     printf("Arquivo salvo com sucesso\n");
+//     return;
+
+// }
 
 void limpaBuffer() {
 
