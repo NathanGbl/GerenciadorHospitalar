@@ -25,6 +25,8 @@ int main() {
                 atualizarDadosPaciente(listaRegistros, novosDados);
             } else if (opcao == 5) {
                 removerPaciente(listaRegistros);
+            } else if (opcao == 6) {
+                continue;
             }
         } else if (opcao == 2) {
             menuAtendimento(&opcao);
@@ -34,6 +36,8 @@ int main() {
                 desenfileirarPaciente(filaPacientes, pilha);
             } else if (opcao == 3) {
                 mostrarFila(filaPacientes);
+            } else if (opcao == 4) {
+                continue;
             }
         } else if (opcao == 3) {
             menuPesquisa(&opcao);
@@ -45,6 +49,8 @@ int main() {
                 mostrarPorDia(listaRegistros);
             } else if (opcao == 4) {
                 mostrarPorIdade(listaRegistros);
+            } else if (opcao == 5) {
+                continue;
             }
         } else if (opcao == 4) {
             menuDesfazer(confirm);

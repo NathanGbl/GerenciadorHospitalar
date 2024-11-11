@@ -58,6 +58,7 @@ void menuCadastrar(int *opcao) {
     printf("\t3. Mostrar lista completa\n");
     printf("\t4. Atualizar dados de paciente\n");
     printf("\t5. Remover paciente\n");
+    printf("\t6. Voltar\n");
     printf("\tOpção: ");
     scanf("%d", opcao);
 }
@@ -67,6 +68,7 @@ void menuAtendimento(int *opcao) {
     printf("\t1. Enfileirar paciente\n");
     printf("\t2. Desenfileirar paciente\n");
     printf("\t3. Mostrar fila\n");
+    printf("\t4. Voltar\n");
     printf("\tOpção: ");
     scanf("%d", opcao);
 
@@ -79,6 +81,7 @@ void menuPesquisa(int *opcao) {
     printf("\t\t2. Por mes\n");
     printf("\t\t3. Por dia\n");
     printf("\t\t4. Por idade\n");
+    printf("\t5. Voltar\n");
     printf("Opção: ");
     scanf("%d", opcao);
 
@@ -289,16 +292,32 @@ void RotacaoDireita(ABB *arvore, EABB *x, int modo) {
 
     x->filhoEsq->pai = x->pai;
     if (x->pai != NULL) {
-        if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
-            x->pai->filhoDir = x->filhoEsq;
-        } else if (modo == 2 && x->dados->entrada->mes > x->pai->dados->entrada->mes) {
-            x->pai->filhoDir = x->filhoEsq;
-        } else if (modo == 3 && x->dados->entrada->dia > x->pai->dados->entrada->dia) {
-            x->pai->filhoDir = x->filhoEsq;
-        } else if (modo == 4 && x->dados->idade > x->pai->dados->idade) {
-            x->pai->filhoDir = x->filhoEsq;
-        } else {
-            x->pai->filhoEsq = x->filhoEsq;
+        if (x->pai != NULL) {
+            if (modo == 1) {
+                if (x->dados->entrada->ano > x->pai->dados->entrada->ano) {
+                    x->pai->filhoDir = x->filhoEsq;
+                } else {
+                    x->pai->filhoEsq = x->filhoEsq;
+                }
+            } else if (modo == 2) {
+                if (x->dados->entrada->mes > x->pai->dados->entrada->mes) {
+                    x->pai->filhoDir = x->filhoEsq;
+                } else {
+                    x->pai->filhoEsq = x->filhoEsq;
+                }
+            } else if (modo == 3) {
+                if (x->dados->entrada->dia > x->pai->dados->entrada->dia) {
+                    x->pai->filhoDir = x->filhoEsq;
+                } else {
+                    x->pai->filhoEsq = x->filhoEsq;
+                }
+            } else if (modo == 4) {
+                if (x->dados->idade > x->pai->dados->idade) {
+                    x->pai->filhoDir = x->filhoEsq;
+                } else {
+                    x->pai->filhoEsq = x->filhoEsq;
+                }
+            }
         }
     } else {
         arvore->raiz = x->filhoEsq;
@@ -316,16 +335,30 @@ void RotacaoEsquerda(ABB *arvore, EABB *x, int modo) {
 
     x->filhoDir->pai = x->pai;
     if (x->pai != NULL) {
-        if (modo == 1 && x->dados->entrada->ano > x->pai->dados->entrada->ano) {
-            x->pai->filhoDir = x->filhoDir;
-        } else if (modo == 2 && x->dados->entrada->mes > x->pai->dados->entrada->mes) {
-            x->pai->filhoDir = x->filhoDir;
-        } else if (modo == 3 && x->dados->entrada->dia > x->pai->dados->entrada->dia) {
-            x->pai->filhoDir = x->filhoDir;
-        } else if (modo == 4 && x->dados->idade > x->pai->dados->idade) {
-            x->pai->filhoDir = x->filhoDir;
-        } else {
-            x->pai->filhoEsq = x->filhoDir;
+        if (modo == 1) {
+            if (x->dados->entrada->ano > x->pai->dados->entrada->ano) {
+                x->pai->filhoDir = x->filhoDir;
+            } else {
+                x->pai->filhoEsq = x->filhoDir;
+            }
+        } else if (modo == 2) {
+            if (x->dados->entrada->mes > x->pai->dados->entrada->mes) {
+                x->pai->filhoDir = x->filhoDir;
+            } else {
+                x->pai->filhoEsq = x->filhoDir;
+            }
+        } else if (modo == 3) {
+            if (x->dados->entrada->dia > x->pai->dados->entrada->dia) {
+                x->pai->filhoDir = x->filhoDir;
+            } else {
+                x->pai->filhoEsq = x->filhoDir;
+            }
+        } else if (modo == 4) {
+            if (x->dados->idade > x->pai->dados->idade) {
+                x->pai->filhoDir = x->filhoDir;
+            } else {
+                x->pai->filhoEsq = x->filhoDir;
+            }
         }
     } else {
         arvore->raiz = x->filhoDir;
@@ -364,28 +397,61 @@ int inserirArvore(ABB *arvore, Registro *paciente, int modo) {
 
   while (atual != NULL) {
     anterior = atual;
-    if (modo == 1 && novoPaciente->dados->entrada->ano > atual->dados->entrada->ano) {
-        atual = atual->filhoDir;
-    } else if (modo == 2 && novoPaciente->dados->entrada->mes > atual->dados->entrada->mes) {
-        atual = atual->filhoDir;
-    } else if (modo == 3 && novoPaciente->dados->entrada->dia > atual->dados->entrada->dia) {
-        atual = atual->filhoDir;
-    } else if (modo == 4 && novoPaciente->dados->idade > atual->dados->idade) {
-        atual = atual->filhoDir;
+    if (modo == 1) {
+        if (novoPaciente->dados->entrada->ano > atual->dados->entrada->ano) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 2) {
+        if (novoPaciente->dados->entrada->mes > atual->dados->entrada->mes) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 3) {
+        if (novoPaciente->dados->entrada->dia > atual->dados->entrada->dia) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 4) {
+        if (novoPaciente->dados->idade > atual->dados->idade) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
     } else {
-        atual = atual->filhoEsq;
+        return 0;
     }
   }
 
   novoPaciente->pai = anterior;
   if (anterior != NULL) {
-    if (novoPaciente->dados->entrada->ano < anterior->dados->entrada->ano ||
-        novoPaciente->dados->entrada->mes < atual->dados->entrada->mes ||
-        novoPaciente->dados->entrada->dia < atual->dados->entrada->dia ||
-        novoPaciente->dados->idade > atual->dados->idade) {
-      anterior->filhoEsq = novoPaciente;
-    } else {
-      anterior->filhoDir = novoPaciente;
+    if (modo == 1) {
+        if (novoPaciente->dados->entrada->ano > atual->dados->entrada->ano) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 2) {
+        if (novoPaciente->dados->entrada->mes > atual->dados->entrada->mes) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 3) {
+        if (novoPaciente->dados->entrada->dia > atual->dados->entrada->dia) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
+    } else if (modo == 4) {
+        if (novoPaciente->dados->idade > atual->dados->idade) {
+            atual = atual->filhoDir;
+        } else {
+            atual = atual->filhoEsq;
+        }
     }
   } else {
     arvore->raiz = novoPaciente;
@@ -646,7 +712,7 @@ void desfazer(Stack *pilha, Fila *queue) {
             queue->tail->anterior->proximo = NULL;
             queue->tail = queue->tail->anterior;
             free(temp);
-        } else if (pilha->topo->acao == 2) {
+        } else if (op->acao == 2) {
             EFila *novo = criaCelula(op->dados);
             novo->proximo = queue->head;
             queue->head->anterior = novo;
