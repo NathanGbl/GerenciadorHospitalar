@@ -87,11 +87,12 @@ void menuPesquisa(int *opcao) {
 
 }
 
-void menuDesfazer(char confirm) {
+void menuDesfazer(char *confirm) {
 
     printf("\tDeseja reverter a ultima operacao feita no atendimento?(s/n)\n");
-    printf("Opção: ");
-    scanf("%c", &confirm);
+    printf("\tOpção: ");
+    limpaBuffer();
+    scanf("%c", confirm);
 
 }
 
@@ -481,6 +482,7 @@ Operacao *criarOperacao(int acao, Registro *dados) {
 
     Operacao *op = malloc(sizeof(Operacao));
     op->proximo = NULL;
+    op->acao = acao;
     op->dados = dados;
     return op;
 
@@ -534,11 +536,7 @@ Registro *criaRegistro() {
     srand(time(NULL));
     int dia = (rand() % 30) + 1;
     int mes = (rand() % 11) + 1;
-    int ano = (rand() % 2024) + 84;
-
-    while (ano > 2024 || ano < 1940) {
-        ano = (rand() % 2024) + 84;
-    }
+    int ano = 2024;
 
     strcpy(novoPaciente->nome, nome);
     novoPaciente->idade = idade;
@@ -578,7 +576,7 @@ void mostrarListaCompleta(Lista *lista) { mostrarLDE(lista); };
 void atualizarDadosPaciente(Lista *lista, Registro *novosDados) {
 
     char rg[12];
-    printf("Digite o rg do paciente: ");
+    printf("\t\tDigite o rg antigo do paciente: ");
     limpaBuffer();
     scanf("%[^\n]", rg);
     ELista *atual = buscarPeloRg(lista, rg);
@@ -586,7 +584,7 @@ void atualizarDadosPaciente(Lista *lista, Registro *novosDados) {
         strcpy(atual->dados->nome, novosDados->nome);
         atual->dados->idade = novosDados->idade;
         strcpy(atual->dados->rg, novosDados->rg);
-        printf("Dados do paciente atualizados com sucesso.");
+        printf("Dados do paciente atualizados com sucesso.\n");
         return;
     }
     printf("Paciente não encontrado.");
@@ -708,20 +706,21 @@ void desfazer(Stack *pilha, Fila *queue) {
     Operacao *op = pop(pilha);
     if (op != NULL) {
         if (op->acao == 1) {
-            EFila *temp = queue->tail;
-            queue->tail->anterior->proximo = NULL;
             queue->tail = queue->tail->anterior;
-            free(temp);
+            queue->tail->proximo = NULL;
+            printf("\tAção desfeita com sucesso.\n");
+            return;
         } else if (op->acao == 2) {
             EFila *novo = criaCelula(op->dados);
             novo->proximo = queue->head;
             queue->head->anterior = novo;
             queue->head = novo;
+            printf("Ação desfeita com sucesso.\n");
+            return;
         } else {
-            printf("Não há mais ações para desfazer.");
+            printf("Não há mais ações para desfazer.\n");
             return;
         }
-        printf("Ação desfeita com sucesso");
     }
 
 }
@@ -734,12 +733,20 @@ void leArquivo(Lista *lista) {
     if (f == NULL) {
         return;
     }
-    fread(lista, sizeof(int), 1, f);
-
+    if (fread(&lista->qtde, sizeof(int), 1, f) != 1) {
+        printf("Erro ao ler a quantidade de elementos.\n");
+        fclose(f);
+        return;
+    }
+    printf("Quantidade de elementos: %d\n", lista->qtde);
     for (int i = 0; i < lista->qtde; i++) {
-        ELista *novo = malloc(sizeof(ELista));
-        fread(novo, sizeof(ELista) - sizeof(ELista*), 1, f);
-
+        ELista *novo = inicializaELista(NULL);
+        novo->dados = malloc(sizeof(Registro));
+        novo->dados->entrada = malloc(sizeof(Data));
+        fread(novo->dados->nome, sizeof(char), 51, f);
+        fread(&novo->dados->idade, sizeof(int), 1, f);
+        fread(novo->dados->rg, sizeof(char), 12, f);
+        fread(novo->dados->entrada, sizeof(Data), 1, f);
         inserirLDE(lista, novo->dados);
     }
     fclose(f);
@@ -754,13 +761,17 @@ void escreveArquivo(Lista *lista) {
     if (f == NULL) {
         return;
     }
+    fwrite(&lista->qtde, sizeof(int), 1, f);
+
     ELista *atual = lista->inicio;
-    while(atual!= NULL) {
-        fwrite(atual, sizeof(ELista) - sizeof(ELista*), 1, f);
+    while(atual != NULL) {
+        fwrite(atual->dados->nome, sizeof(char), 51, f);
+        fwrite(&atual->dados->idade, sizeof(int), 1, f);
+        fwrite(atual->dados->rg, sizeof(char), 12, f);
+        fwrite(atual->dados->entrada, sizeof(Data), 1, f);
         atual = atual->proximo;  
     }
     fclose(f);
-    printf("Arquivo salvo com sucesso\n");
     return;
 
 }
