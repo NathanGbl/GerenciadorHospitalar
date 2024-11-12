@@ -104,12 +104,6 @@ ABB *criaArvore();
 
 void liberarArvore(EABB* vertice);
 
-int max(int x, int y);
-
-int altura (EABB *x);
-
-int fatorBalanceamento(EABB *x);
-
 Operacao *criarOperacao(int acao, Registro *dados);
 
 Stack *criarPilha();
@@ -124,12 +118,6 @@ Operacao *pop(Stack *pilha);
     Modo = 3 => constroi pelo dia
     Modo = 4 => constroi pelo idade
  */
-
-void RotacaoDireita(ABB *arvore, EABB *x, int modo);
-
-void RotacaoEsquerda(ABB *arvore, EABB *x, int modo);
-
-void balanceie (ABB *arvore, EABB *r, int modo);
 
 int inserirArvore(ABB *arvore, Registro *paciente, int modo);
 

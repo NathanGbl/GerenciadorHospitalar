@@ -10,6 +10,7 @@ int main() {
     Fila *filaPacientes = criaFila();
     int opcao = -1;
     char confirm;
+    int carregou = 0;
     while(opcao != 0) {
         menu(&opcao);
         if (opcao == 1) {
@@ -24,7 +25,11 @@ int main() {
                 Registro *novosDados = criaRegistro();
                 atualizarDadosPaciente(listaRegistros, novosDados);
             } else if (opcao == 5) {
-                removerPaciente(listaRegistros);
+                if (removerPaciente(listaRegistros)) {
+                    printf("\tPaciente removido com sucesso.\n");
+                } else {
+                    printf("\tPaciente não encontrado.\n");
+                }
             } else if (opcao == 6) {
                 continue;
             }
@@ -59,11 +64,10 @@ int main() {
                 desfazer(pilha, filaPacientes);
             }
         } else if (opcao == 5) {
-            if (listaRegistros->inicio == NULL) {
-                printf("\t\tLEU\n");
+            if (!carregou) {
                 leArquivo(listaRegistros);
+                carregou = 1;
             } else {
-                printf("\t\tESCREVEU\n");
                 escreveArquivo(listaRegistros);
             }
         } else if (opcao == 6) {
