@@ -74,7 +74,7 @@ void menuAtendimento(int *opcao);
 
 void menuPesquisa(int *opcao);
 
-void menuDesfazer(char *confirm);
+void menuDesfazer(char *confirm, Stack *pilha);
 
 void menuSobre();
 

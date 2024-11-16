@@ -58,7 +58,7 @@ int main() {
                 continue;
             }
         } else if (opcao == 4) {
-            menuDesfazer(&confirm);
+            menuDesfazer(&confirm, pilha);
             confirm = tolower(confirm);
             if (confirm == 's') {
                 desfazer(pilha, filaPacientes);
